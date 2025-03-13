@@ -59,13 +59,15 @@ ev_filtered
 ## Plot states filtered 
 
 ```{r}
-ggplot(ev_filtered, aes(x = count, y = State)) +
+ev_by_state <- ggplot(ev_filtered, aes(x = count, y = State)) +
   geom_bar(stat = "identity", fill = "darkblue") +
   coord_flip() +  # Flip for readability
   labs(title = "States with less and more EVs in 2023",
        x = "# Registered EV",
        y = "States") +
   theme_minimal()
+ev_by_state
+ggsave("ev_states_2023.jpg", plot = ev_by_state, width = 10, height = 6, dpi = 300)
 ```
 
 ## Saving the dataset 
@@ -166,4 +168,5 @@ head(combined_df)
 # Save the new dataframe
 write.csv(combined_df, "emm_stations.csv", row.names = TRUE)
 ```
+
 
