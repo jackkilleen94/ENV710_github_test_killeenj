@@ -78,37 +78,37 @@ write.csv(ev_regist_sorted, "ev_by_state.csv", row.names = FALSE)
 # 2. This the process I used to create and save the 10 states for further analysis (one by one)
 
 ```{r}
-data_wyom <- read.csv('/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Project/Wyoming.csv', header = TRUE, stringsAsFactors = FALSE)
+data_virginia <- read.csv('/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/raw data/Virginia.csv', header = TRUE, stringsAsFactors = FALSE)
 ```
 
 ## Data exploration ans wrangling 
 
 ```{r}
-str (data_wyom)
-dim(data_wyom)
-summary(data_wyom)
+str (data_califo)
+dim(data_califo)
+summary(data_califo)
 ```
 
 ## Csv transposing and saving
 
 ```{r}
-wyom_transp <- as.data.frame(t(data_wyom))  # Transpose and keep as dataframe
-colnames(wyom_transp) <- wyom_transp[1, ]
-wyom_transp <- wyom_transp %>%
-  mutate(Wyoming = seq(1990, 2023)) %>%
-  select(Wyoming, everything())
-wyom_trans <- wyom_transp [-1, ]  # To remove the first row now that it's used as column names
-write.csv(wyom_trans, "wyoming_emission.csv", row.names = FALSE)
+virginia_transp <- as.data.frame(t(data_virginia))  # Transpose and keep as dataframe
+colnames(virginia_transp) <- virginia_transp[1, ]
+virginia_transp <- virginia_transp %>%
+  mutate(virginia = seq(1990, 2023)) %>%
+  select(virginia, everything())
+virginia_trans <- virginia_transp [-1, ]  # To remove the first row now that it's used as column names
+write.csv(virginia_trans, "virginia_emission.csv", row.names = FALSE)
 ```
 
 # 3. Combining all 10 CSV created to make one dataset
 
 ```{r}
 # Define the path to the folder containing all CSV files
-folder_path <- "/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/" 
+folder_path <- '/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/Processed' 
 
 # Listing all CSV files in the folder
-file_list <- list.files(path = folder_path, pattern = "*.csv", full.names = TRUE)
+file_list <- list.files(path = folder_path, pattern = "*_emission.csv", full.names = TRUE)
 
 # Read all CSV files and combine them
 df_list <- lapply(file_list, read.csv)

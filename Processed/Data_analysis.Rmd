@@ -87,8 +87,6 @@ ggsave("alabama_emm_stations.jpg", device = "jpeg", width = 8, height = 5, dpi =
 ```
 
 ```{r}
-ggplot(ev_by_state, aes("Registration Count"))+
-  geom_histogram()+
-  theme_bw()
+plot(ten_states)
 ```
 
