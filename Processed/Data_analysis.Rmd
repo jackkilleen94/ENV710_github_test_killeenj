@@ -19,7 +19,10 @@ library(dplyr)
 library(readxl)
 library (ggplot2)
 library(readr)
+<<<<<<< HEAD
 library(tidyr)
+=======
+>>>>>>> c488a58aefa1b93a575e3d9ddd4c5ca2a67e403f
 ```
 
 # insert Datasets
@@ -86,7 +89,10 @@ alab_bar
 ggsave("alabama_emm_stations.jpg", device = "jpeg", width = 8, height = 5, dpi = 300)
 ```
 
+<<<<<<< HEAD
 ```{r}
 plot(ten_states)
 ```
 
+=======
+>>>>>>> c488a58aefa1b93a575e3d9ddd4c5ca2a67e403f
