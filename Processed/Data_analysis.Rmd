@@ -19,10 +19,13 @@ library(dplyr)
 library(readxl)
 library (ggplot2)
 library(readr)
-<<<<<<< HEAD
 library(tidyr)
-=======
->>>>>>> c488a58aefa1b93a575e3d9ddd4c5ca2a67e403f
+library(dplyr)
+library(lubridate)
+library(forecast)   
+library(tsibble)    
+library(feasts) 
+library(fabletools)
 ```
 
 # insert Datasets
@@ -33,6 +36,63 @@ getwd ()
 ev_by_state <- read.csv("ev_by_state.csv")
 emmission_station <- read.csv('/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/Processed/emm_stations.csv')
 ten_states <- read.csv('/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/Processed/ten_states_emm.csv')
+```
+
+# Importing my dataset
+
+```{r}
+dataset <- read.csv("/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Project/processed/ten_states_emm.csv", 
+                    na.strings = c("NA", "Na", "na", ""))
+glimpse(dataset)
+colSums(is.na(dataset)) # Check missing values
+```
+
+# Adrssing Nas, column names and date missmatching 
+
+```{r}
+dataset <- dataset %>%
+  mutate(year = as.integer(year)) %>%
+  rename(
+    alaska_st = aaska_st,
+    alaska_evregist = alaska_evrest,
+    california_evregist = califorrnia_evregist,
+    virginia_transportation = virginia_ransportation,
+    alaska_agriculture = alaska_rgriculture,
+    west_virginia_evregist = west_virg_evregist,
+    washington_transportation = wshtn_transportation,
+    washington_industry = wshtn_industry,
+    washington_electric.power.industry = wshtn_electric.power.industry,
+    washington_agriculture = wshtn_agriculture,
+    washington_commercial = wshtn_commercial,
+    washington_residential = wshtn_residential,
+    washington_gross.total = wshtn_gross.total,
+    west_virginia_electric.power.industry = westvirg_electric.power.industry,
+    west_virginia_industry = westvirg_industry,
+    west_virginia_transportation = westvirg_transportation,
+    west_virginia_commercial = westvirg_commercial,
+    west_virginia_residential = westvirg_residential,
+    west_virginia_agriculture = westvirg_agriculture,
+    west_virginia_gross.total = westvirg_gross.total,
+    wisconsin_electric.power.industry = wiscons_lectric.power.industry,
+    wisconsin_transportation = wiscons_transportation,
+    wisconsin_agriculture = wiscons_agriculture,
+    wisconsin_industry = wiscons_industry,
+    wisconsin_residential = wiscons_residential,
+    wisconsin_commercial = wiscons_commercial,
+    wisconsin_gross.total = wiscons_gross.total
+  ) %>%
+
+  # Convert year to Date format
+  mutate(year = as.Date(paste0(year, "-01-01"), format = "%Y-%m-%d")) %>%
+
+  # Replace all NAs with 0
+  mutate(across(everything(), ~replace(., is.na(.), 0))) %>%
+
+  # Convert all non-year columns to numeric (remove commas if present)
+  mutate(across(-year, ~as.numeric(gsub(",", "", as.character(.)))))
+
+# Save the cleaned dataset as a CSV
+write.csv(dataset, "cleaned_dataset.csv", row.names = FALSE)
 ```
 
 # Some plots
@@ -89,10 +149,9 @@ alab_bar
 ggsave("alabama_emm_stations.jpg", device = "jpeg", width = 8, height = 5, dpi = 300)
 ```
 
-<<<<<<< HEAD
 ```{r}
 plot(ten_states)
 ```
 
-=======
->>>>>>> c488a58aefa1b93a575e3d9ddd4c5ca2a67e403f
+
+
