@@ -1,0 +1,79 @@
+---
+title: "KilleenJ_DataVisuals"
+author: "Jack Killeen"
+date: "2025-03-12"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+# Set WD
+#setwd("C:/Users/13017/Documents/Duke - Second Semester/ENV710")
+
+# Load data
+file_path <- "EV Reg and Med Income.xlsx"
+df <- read_excel(file_path, sheet = 1)
+
+# View columns
+print(colnames(df))
+df <- df %>%
+  rename(State = 1, RegistrationCount = 2, MedianIncome = 3)
+
+# Identify outliers (Just California)
+outlier_threshold <- quantile(df$RegistrationCount, 0.99) 
+df$outlier <- ifelse(df$RegistrationCount > outlier_threshold, "Outlier", "Regular")
+
+# Create a scatter plot with a log scale for better visibility
+plot <- ggplot(df, aes(x = MedianIncome, y = RegistrationCount, label = State)) +
+  geom_point(aes(color = outlier), size = 3, alpha = 0.7) +
+  geom_text(data = df[df$outlier == "Regular",], vjust = -1, size = 3.5) +
+  geom_text(data = df[df$outlier == "Outlier",], vjust = 1, hjust = 1.1, size = 4, fontface = "bold", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "black", linetype = "dashed") +
+  scale_y_log10() +
+  labs(
+    title = "EV Registrations vs Median Income by State",
+    x = "Median Income ($)",
+    y = "EV Registration Count (log scale)",
+    caption = "Sources: Household Income in States and Metropolitan Areas: 2023\nAlternative Fuels Data Center: Maps and Data"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("Regular" = "blue", "Outlier" = "red"), guide = "none")
+
+# Print the plot
+print(plot)
+```
+
+```{r}
+# Use ggrepel to automatically avoid overlapping labels
+library(ggrepel)
+
+plot1 <- ggplot(df, aes(x = MedianIncome, y = RegistrationCount, label = State)) +
+  geom_point(aes(color = outlier), size = 3, alpha = 0.7) +
+  geom_text_repel(data = df[df$outlier == "Regular",], 
+                  size = 3, nudge_x = 0.1, nudge_y = 0.1) +
+  geom_text_repel(data = df[df$outlier == "Outlier",], 
+                  size = 3.5, fontface = "bold", color = "red", nudge_x = -0.1, nudge_y = -0.1) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", linetype = "dashed") +
+  scale_y_log10() +
+  labs(
+    title = "EV Registrations vs Median Income by State",
+    x = "Median Income ($)",
+    y = "EV Registration Count (log scale)",
+    caption = "Sources: Household Income in States and Metropolitan Areas: 2023\nAlternative Fuels Data Center: Maps and Data"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("Regular" = "blue", "Outlier" = "red"), guide = "none")
+
+print(plot1)
+```
+
+```{r}
+ggsave("EV_Regis_MedIncome.jpg", plot1, width = 10, height = 8, dpi = 300)
+```
+
