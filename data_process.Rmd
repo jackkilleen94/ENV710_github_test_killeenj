@@ -24,9 +24,8 @@ library(readr)
 ```{r}
 # Read the Excel file (first sheet by default)
 here()
-ev_regist <- read_excel("/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Project/ev-registration-by-state.xlsx", 
+ev_regist <- read_excel("./raw data/ev-registration-by-state.xlsx", 
                         col_names = TRUE)   
-## Faustin, Please find this file and upload it here (parallel to this rmd)
 
 # Select only columns "A" and "B"
 ev_regist_selected <- ev_regist[, c(1, 2)]
