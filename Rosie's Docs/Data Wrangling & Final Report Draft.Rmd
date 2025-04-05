@@ -9,3 +9,61 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, message=FALSE}
+# import libraries
+library(here)
+library(tidyverse)
+library(naniar)
+library(DHARMa)
+library(gtsummary)
+library(broom)
+library(ggplot2)
+library(dplyr)
+```
+
+
+# Data Wrangling
+```{r Import all of the datasets}
+# Import all of the datasets first
+precipitation_data <- read.csv("2022 US State Precipitation.csv", 
+                 skip = 4,        # Skip first 4 rows
+                 header = TRUE)   # Use first row after skipping as header
+precipitation_data <- precipitation_data %>% 
+  rename(Precip_in = Value)
+
+temp_data <- read.csv("2022 US State Temperature.csv", 
+                 skip = 4,        
+                 header = TRUE)
+temp_data <- temp_data %>% 
+  rename(Temp_F = Value)
+
+population_data <- read.csv("Population by State 2022.csv", 
+                 skip = 3,      
+                 header = TRUE)
+# This requires formatting to remove the extra dot from the raw data
+population_data$State <- gsub("^\\.+", "", population_data$State)
+
+ev_registeration_df <- read.csv("EV registeration count by state 2022.csv",
+                                skip = 1,
+                                header = TRUE)
+
+# This is the main data frame to combine all data based on
+main_df <- read.csv("Master Data Frame.csv")
+```
+
+```{r Combine into One Dataset for Visuals and Analysis}
+
+df_list <- list(
+  main_df[c("State", "PM.2.5", "NO2", "O3..ppm.")],
+  population_data[c("State", "X2022")],
+  ev_registeration_df[c("State", "Electric..EV.")],
+  temp_data[c("State", "Temp_F")],
+  precipitation_data[c("State", "Precip_in")]
+  )
+
+combined_df <- Reduce(function(x, y) merge(x, y, by = "State", all = TRUE), df_list)
+# remove empty rows
+clean_combine_df <- combined_df %>% 
+  filter(!is.na(State) & State != "")
+```
+
