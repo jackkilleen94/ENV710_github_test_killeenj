@@ -64,6 +64,20 @@ df_list <- list(
 combined_df <- Reduce(function(x, y) merge(x, y, by = "State", all = TRUE), df_list)
 # remove empty rows
 clean_combine_df <- combined_df %>% 
-  filter(!is.na(State) & State != "")
+  filter(!is.na(State) & State != "") %>%
+  rename(Population_2022 = X2022) %>%
+  rename(EV_count = Electric..EV.) %>%
+  rename(Ozone_ppm = O3..ppm.)
 ```
+
+
+```{r Add EV Registeration Ratio Column to Dataset}
+clean_combine_df <- clean_combine_df %>%
+  mutate(
+    EV_count = as.numeric(gsub(",", "", EV_count)),
+    Population_2022 = as.numeric(gsub(",", "", Population_2022)),
+    EV_ratio = EV_count / Population_2022
+    )
+```
+
 
