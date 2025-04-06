@@ -47,6 +47,18 @@ ev_registeration_df <- read.csv("EV registeration count by state 2022.csv",
                                 skip = 1,
                                 header = TRUE)
 
+urban_pop_data <- read.csv("Urban and Rural Data.csv") %>%
+  mutate(
+    Total = as.numeric(gsub("[,.]+", "", Total)),
+    X....Urban = as.numeric(gsub("[,.]+", "", X....Urban))
+  )
+
+# add a column for calculating urban / total population ratio for urbanization
+# this ratio would be under year 2020, which is the latest data we found
+urban_pop_data <- urban_pop_data %>%
+  # This converts the ratio to # percent
+  mutate(Urbanization = (X....Urban / Total)*100) 
+
 # This is the main data frame to combine all data based on
 main_df <- read.csv("Master Data Frame.csv")
 ```
@@ -56,6 +68,7 @@ main_df <- read.csv("Master Data Frame.csv")
 df_list <- list(
   main_df[c("State", "PM.2.5", "NO2", "O3..ppm.")],
   population_data[c("State", "X2022")],
+  urban_pop_data[c("State", "Urbanization")],
   ev_registeration_df[c("State", "Electric..EV.")],
   temp_data[c("State", "Temp_F")],
   precipitation_data[c("State", "Precip_in")]
