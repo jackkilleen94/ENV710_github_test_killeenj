@@ -24,6 +24,7 @@ library(dplyr)
 
 # Data Wrangling
 ```{r Import all of the datasets}
+here()
 precipitation_data <- read.csv("2022 US State Precipitation.csv", 
                  skip = 4,        # Skip first 4 rows
                  header = TRUE)   # Use first row after skipping as header
@@ -36,17 +37,17 @@ temp_data <- read.csv("2022 US State Temperature.csv",
 temp_data <- temp_data %>% 
   rename(Temp_F = Value)
 
-population_data <- read.csv("./Rosie's Docs/Population by State 2022.csv", 
+population_data <- read.csv("Population by State 2022.csv", 
                  skip = 3,      
                  header = TRUE)
 # This requires formatting to remove the extra dot from the raw data
 population_data$State <- gsub("^\\.+", "", population_data$State)
 
-ev_registeration_df <- read.csv("./Rosie's Docs/EV registeration count by state 2022.csv",
+ev_registeration_df <- read.csv("EV registeration count by state 2022.csv",
                                 skip = 1,
                                 header = TRUE)
 
-urban_pop_data <- read.csv("./Rosie's Docs/Urban and Rural Data.csv") %>%
+urban_pop_data <- read.csv("Urban and Rural Data.csv") %>%
   mutate(
     Total = as.numeric(gsub("[,.]+", "", Total)),
     X....Urban = as.numeric(gsub("[,.]+", "", X....Urban))
@@ -59,7 +60,7 @@ urban_pop_data <- urban_pop_data %>%
   mutate(Urbanization = (X....Urban / Total)*100) 
 
 # This is the main data frame to combine all data based on
-main_df <- read.csv("./Rosie's Docs/Master Data Frame.csv")
+main_df <- read.csv("Master Data Frame.csv")
 ```
 
 ```{r Combine into One Dataset for Visuals and Analysis}
