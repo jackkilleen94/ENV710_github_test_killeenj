@@ -15,7 +15,7 @@ library(ggplot2)
 library(dplyr)
 ```
 ```{r}
-df <- read_excel("D:/Spring 2025/ENV 710 Stats/Rosie's Docs/Transportation Emissions and EV Ports 2011-2022.xlsx", 
+df <- read_excel("Transportation Emissions and EV Ports 2011-2022.xlsx", 
                  skip = 2, col_names = c("Year", "TransportationEmissions", 
                                          "Count_EV_Charging_Ports"))
 ```
