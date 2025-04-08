@@ -139,18 +139,70 @@ ggplot(data, aes(x = Ozone_ppm)) +
 > The two values in Ozone concentration histograms may appear to be outliers according to the histogram grouping, but we decided not to remove them because of small range of values.
 
 ## Independent Variables Histograms
+```{r EV Registeration Ratio}
+data$EV_ratio <- as.numeric(data$EV_ratio)
+ggplot(data, aes(x = EV_ratio)) +
+  geom_histogram(bins = 10, fill = "blue", color = "black") +
+  ggtitle("Distribution of EV Per Capita") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+> EV per capita ratio is also right skewed.
 
 
+```{r Temperature}
+data$Temp_F <- as.numeric(data$Temp_F)
+ggplot(data, aes(x = Temp_F)) +
+  geom_histogram(bins = 10, fill = "purple", color = "black") +
+  ggtitle("Distribution of 2022 Average Temperatures Across States") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+
+
+```{r Precipitation}
+data$Precip_in <- as.numeric(data$Precip_in)
+ggplot(data, aes(x = Precip_in)) +
+  geom_histogram(bins = 10, fill = "orange", color = "black") +
+  ggtitle("Distribution of 2022 Average Precipitation (inches) Across States") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+
+## Correlation Coefficients between Variables
+```{r}
+
+```
 
 
 # Regressions
+
+## Regression for PM2.5 (PPB)
 
 ```{r Original PM2.5}
 model_pm25 <- lm(PM.2.5 ~ EV_ratio + Urbanization + Temp_F + Precip_in, data = data)
 summary(model_pm25)
 ```
-
-```{r Log-transformed PM2.5}
-
+```{r Log-tranform non-significant independent variables}
+data$log_Urbanization <- log(data$Urbanization)
+data$log_EV_ratio <- log(data$EV_ratio)
+data$log_Precip_in <- log(data$Precip_in)
 ```
+
+
+```{r Log-transformed regression of PM2.5}
+# re-run model after log-trans
+model_logpm25 <- lm(log_pm2.5 ~ log_EV_ratio + log_Urbanization + Temp_F + log_Precip_in, data = data)
+summary(model_logpm25)
+```
+> The log-transformed model made the p-values lower for each variable and the overall model, but it did change the non-significant variables to significant.
+
+
+## Regression for NO2 (PPB)
+
+
+
+
+## Regression for Ozone -- O3 (PPM)
+
 
