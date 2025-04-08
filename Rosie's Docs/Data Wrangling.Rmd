@@ -89,8 +89,7 @@ clean_combine_df <- clean_combine_df %>%
   mutate(
     EV_count = as.numeric(gsub(",", "", EV_count)),
     Population_2022 = as.numeric(gsub(",", "", Population_2022)),
-    EV_ratio = EV_count / Population_2022
-    )
+    EV_ratio = EV_count / Population_2022)
 ```
 
 ```{r export the main dataframe}

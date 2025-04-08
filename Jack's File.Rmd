@@ -7,6 +7,10 @@ output:
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(maps)
+library(skimr)
 ```
 
 ```{r load-data}
@@ -14,19 +18,17 @@ library(tidyverse)
 data <- read_csv("Rosie's Docs/Combined Final Dataframe.csv")
 ```
 
+# Summary Statistics
+
 ```{r summary-stats}
 # Summary statistics
 summary(data)
-
-library(skimr)
 skim(data)
 ```
 
-```{r}
-library(ggplot2)
-library(dplyr)
-library(maps)
+# Exploratory Data Visuals
 
+```{r State Map}
 data_clean <- data %>%
   mutate(region = tolower(State))
 
@@ -43,7 +45,9 @@ ggplot(map_data_joined, aes(x = long, y = lat, group = group, fill = EV_ratio)) 
   theme_void()
 ```
 
-```{r}
+
+
+```{r Maps of Urbanization and EV Ratio by States}
 library(ggplot2)
 library(dplyr)
 library(maps)
@@ -74,7 +78,7 @@ ev_map <- ggplot(map_data_joined, aes(x = long, y = lat, group = group, fill = E
 gridExtra::grid.arrange(urban_map, ev_map, ncol = 2)
 ```
 
-```{r}
+```{r Scatterplot Urbanization and EV ratio}
 library(ggrepel)
 
 ggplot(data, aes(x = Urbanization, y = EV_ratio, label = State)) +
@@ -87,8 +91,66 @@ ggplot(data, aes(x = Urbanization, y = EV_ratio, label = State)) +
   theme_minimal()
 ```
 
+
+## Dependent Variables Histograms 
+
+```{r PM2.5 Value Distribution}
+ggplot(data, aes(x = PM.2.5)) +
+  geom_histogram(bins = 10, fill = "blue", color = "black") +
+  ggtitle("Distribution of PM.2.5 Concentration Value (PPB)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+
+
+```{r Log transform PM2.5 values the graph again}
+data$log_pm2.5 <- log(data$PM.2.5)
+ggplot(data, aes(x = log_pm2.5)) +
+  geom_histogram(bins = 10, fill = "blue", color = "black") +
+  ggtitle("Distribution of Log Transformed PM.2.5 Concentration Value (PPB)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+> Since the original data of PM2.5 displays some level of left-skewness, I attempted to log-transform the PM2.5 values, but the distribution stil displays a left-skewness. We can experiment this with regressions later too.
+
+
+
+```{r Distrbution of NO2 Concentrations}
+data$NO2 <- as.numeric(data$NO2)
+
+ggplot(data, aes(x = NO2)) +
+  geom_histogram(bins = 10, fill = "purple", color = "black") +
+  ggtitle("Distribution of NO2 Concentration Value (PPB)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+
+
+
 ```{r}
+data$Ozone_ppm <- as.numeric(data$Ozone_ppm)
+ggplot(data, aes(x = Ozone_ppm)) +
+  geom_histogram(bins = 10, fill = "orange", color = "black") +
+  ggtitle("Distribution of Ozone Concentration Value (PPM)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+> The concentration values (parts per billion) of NO2 and Ozone (parts per million) are closer to normal distribution. 
+> The two values in Ozone concentration histograms may appear to be outliers according to the histogram grouping, but we decided not to remove them because of small range of values.
+
+## Independent Variables Histograms
+
+
+
+
+# Regressions
+
+```{r Original PM2.5}
 model_pm25 <- lm(PM.2.5 ~ EV_ratio + Urbanization + Temp_F + Precip_in, data = data)
 summary(model_pm25)
+```
+
+```{r Log-transformed PM2.5}
+
 ```
 

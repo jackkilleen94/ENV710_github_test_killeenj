@@ -1,0 +1,74 @@
+---
+title: "Exploratory Data Visuals"
+author: "Rosie Wu"
+date: "2025-04-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import libraries and Combined Dataset
+```{r}
+library(here)
+library(tidyverse)
+library(gtsummary)
+library(broom)
+library(ggplot2)
+library(dplyr)
+
+main_df <- read.csv("Rosie's Docs/Combined Final Dataframe.csv")
+
+```
+
+# Exploratory Data Visuals
+## Dependent Variables
+```{r PM2.5 Value Distribution}
+ggplot(main_df, aes(x = PM.2.5)) +
+  geom_histogram(bins = 10, fill = "blue", color = "black") +
+  ggtitle("Distribution of PM.2.5 Concentration Value (PPB)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+
+
+```{r Log transform PM2.5 values the graph again}
+main_df$log_pm2.5 <- log(main_df$PM.2.5)
+ggplot(main_df, aes(x = log_pm2.5)) +
+  geom_histogram(bins = 10, fill = "blue", color = "black") +
+  ggtitle("Distribution of Log Transformed PM.2.5 Concentration Value (PPB)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+> Since the original data of PM2.5 displays some level of left-skewness, I attempted to log-transform the PM2.5 values, but the distribution stil displays a left-skewness. We can experiment this with regressions later too.
+
+
+
+```{r Distrbution of NO2 Value }
+main_df$NO2 <- as.numeric(main_df$NO2)
+
+ggplot(main_df, aes(x = NO2)) +
+  geom_histogram(bins = 10, fill = "purple", color = "black") +
+  ggtitle("Distribution of NO2 Concentration Value (PPB)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+
+
+
+```{r}
+main_df$Ozone_ppm <- as.numeric(main_df$Ozone_ppm)
+ggplot(main_df, aes(x = Ozone_ppm)) +
+  geom_histogram(bins = 10, fill = "orange", color = "black") +
+  ggtitle("Distribution of Ozone Concentration Value (PPM)") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+> The concentration values (parts per billion) of NO2 and Ozone (parts per million) are closer to normal distribution. 
+> The two values in Ozone concentration histograms may appear to be outliers according to the histogram grouping, but we decided not to remove them because of small range of values.
+
+
+## Independent Variables
+
+
