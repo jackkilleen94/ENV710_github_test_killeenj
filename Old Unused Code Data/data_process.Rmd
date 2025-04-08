@@ -1,0 +1,176 @@
+---
+title: "Data analysis"
+author: "Faustin Kambale"
+date: "2025-03-12"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library (here)
+library(dplyr)
+library(readxl)
+library (ggplot2)
+library(readr)
+```
+
+# 1. Insert Data on EV registration by state and plot in descending
+
+```{r}
+# Read the Excel file (first sheet by default)
+here()
+ev_regist <- read_excel("./raw data/ev-registration-by-state.xlsx", 
+                        col_names = TRUE)   
+
+# Select only columns "A" and "B"
+ev_regist_selected <- ev_regist[, c(1, 2)]
+colnames(ev_regist_selected) <- as.character(unlist(ev_regist_selected[1, ]))  # Convert first row to column names
+ev_regist_selected <- ev_regist_selected[-1, ]
+ev_regist_sorted <- ev_regist_selected %>%
+  mutate(count = as.numeric(`Registration Count`)) %>%
+  arrange(count)
+head(ev_regist_sorted)
+```
+
+## Plot states sorted 
+
+```{r}
+ggplot(ev_regist_sorted, aes(x = count, y = State)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  coord_flip() +  # Flip for readability
+  labs(title = "Bar Chart Ordered from Least to Greatest",
+       x = "Category",
+       y = "Value") +
+  theme_minimal()
+```
+
+## Select the five states with less EV registration and five with higher Ev registration
+
+```{r}
+ev_filtered <- ev_regist_sorted %>%
+  filter (State %in% c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"))
+ev_filtered
+```
+
+## Plot states filtered 
+
+```{r}
+ev_by_state <- ggplot(ev_filtered, aes(x = count, y = State)) +
+  geom_bar(stat = "identity", fill = "darkblue") +
+  coord_flip() +  # Flip for readability
+  labs(title = "States with less and more EVs in 2023",
+       x = "# Registered EV",
+       y = "States") +
+  theme_minimal()
+ev_by_state
+ggsave("ev_states_2023.jpg", plot = ev_by_state, width = 10, height = 6, dpi = 300)
+```
+
+## Saving the dataset 
+```{r}
+write.csv(ev_regist_sorted, "ev_by_state.csv", row.names = FALSE)
+```
+
+# 2. This the process I used to create and save the 10 states for further analysis (one by one)
+
+```{r}
+data_virginia <- read.csv('/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/raw data/Virginia.csv', header = TRUE, stringsAsFactors = FALSE)
+```
+
+## Data exploration ans wrangling 
+
+```{r}
+str (data_califo)
+dim(data_califo)
+summary(data_califo)
+```
+
+## Csv transposing and saving
+
+```{r}
+virginia_transp <- as.data.frame(t(data_virginia))  # Transpose and keep as dataframe
+colnames(virginia_transp) <- virginia_transp[1, ]
+virginia_transp <- virginia_transp %>%
+  mutate(virginia = seq(1990, 2023)) %>%
+  select(virginia, everything())
+virginia_trans <- virginia_transp [-1, ]  # To remove the first row now that it's used as column names
+write.csv(virginia_trans, "virginia_emission.csv", row.names = FALSE)
+```
+
+# 3. Combining all 10 CSV created to make one dataset
+
+```{r}
+# Define the path to the folder containing all CSV files
+folder_path <- '/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/Processed' 
+
+# Listing all CSV files in the folder
+file_list <- list.files(path = folder_path, pattern = "*_emission.csv", full.names = TRUE)
+
+# Read all CSV files and combine them
+df_list <- lapply(file_list, read.csv)
+
+# Combine all data frames side by side
+ev_emmissions_all <- do.call(cbind, df_list)
+head(ev_emmissions_all)
+write.csv(ev_emmissions_all, "ten_states_emm.csv", row.names = TRUE)
+```
+
+## sorting state by total emission 
+
+```{r}
+colnames(ev_emmissions_all) # To inspect column names
+ev_emmissions_clean <- ev_emmissions_all # turn duplicates into unique names
+names(ev_emmissions_clean) <- make.unique(names(ev_emmissions_all))
+
+# creating the new dataset
+states_emmissions <- ev_emmissions_clean %>%
+  mutate(year = seq(1990, 2022)) %>%
+  select(
+    year,
+    alab_emm = Gross.total,
+    alaska_emm = Gross.total.1,
+    arizona_emm = Gross.total.2,
+    arkansas_emm = Gross.total.3,
+    california_emm = Gross.total.4,
+    virginia_emm = Gross.total.5,
+    washtn_emm = Gross.total.6,
+    west.virg_emm = Gross.total.7,
+    wiscon_emm = Gross.total.8,
+    wyoming_emm = Gross.total.9
+  )
+head(states_emmissions)
+```
+
+# 4. Combine emmissions and ev Stations 
+
+```{r}
+# Importing the Ev stations by state 
+ev_stations <- read_excel('/Users/faustinkambale/Library/CloudStorage/OneDrive-DukeUniversity/Duke/Classes/Spring 2025/Stat modelling/Lab/ENV710_github_test_killeenj/EV_stations_by_state.xlsx', sheet = "Combined")
+ev_stations <- ev_stations %>%
+  rename(year = Year)
+head(ev_stations)
+
+# Extracting Data from the emission dataset from 2007 to 2022 
+
+filtered_emmissions <- states_emmissions %>%
+  filter(year >= 2007 & year <= 2022)
+
+# Combine with ev_stations
+combined_df <- filtered_emmissions %>%
+  left_join(ev_stations, by = "year")
+
+head(combined_df)
+
+# Save the new dataframe
+write.csv(combined_df, "emm_stations.csv", row.names = TRUE)
+```
+
+```{r}
+
+```
+
