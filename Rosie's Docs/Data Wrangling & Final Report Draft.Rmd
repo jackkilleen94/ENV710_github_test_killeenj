@@ -93,4 +93,7 @@ clean_combine_df <- clean_combine_df %>%
     )
 ```
 
+```{r export the main dataframe}
+write.csv(clean_combine_df, "Combined Final Dataframe.csv", row.names = FALSE)
+```
 
