@@ -27,16 +27,15 @@ library(ggplot2)
 library(dplyr)
 library(maps)
 
-# Prep: lowercase state names for join
 data_clean <- data %>%
   mutate(region = tolower(State))
 
 states_map <- map_data("state")
 
-# Merge map data with your data
+# Merge map data
 map_data_joined <- left_join(states_map, data_clean, by = "region")
 
-# Plot: change fill to any variable like PM.2.5 or NO2
+# Plot
 ggplot(map_data_joined, aes(x = long, y = lat, group = group, fill = EV_ratio)) +
   geom_polygon(color = "white") +
   coord_fixed(1.3) +
@@ -76,7 +75,6 @@ gridExtra::grid.arrange(urban_map, ev_map, ncol = 2)
 ```
 
 ```{r}
-install.packages("ggrepel")  # Run once
 library(ggrepel)
 
 ggplot(data, aes(x = Urbanization, y = EV_ratio, label = State)) +
