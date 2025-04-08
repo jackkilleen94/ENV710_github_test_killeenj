@@ -15,7 +15,7 @@ library(skimr)
 
 ```{r load-data}
 # Load data
-data <- read_csv("Rosie's Docs/Combined Final Dataframe.csv")
+data <- read_csv("Data and Raw Data Wrangling/Combined Final Dataframe.csv")
 ```
 
 # Summary Statistics
