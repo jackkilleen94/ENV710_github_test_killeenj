@@ -27,8 +27,9 @@ data <- read_csv("Data and Raw Data Wrangling/Combined Final Dataframe.csv")
 
 ```{r summary-stats}
 # Summary statistics
+data$NO2 <- as.numeric(data$NO2)
 summary(data)
-skim(data)
+# skim(data)
 ```
 
 # Exploratory Data Visuals
@@ -229,7 +230,7 @@ summary(model_logNO2)
 > increased overall significance of the model, and EV_ratio variable. R-squared also increased.
 
 ## Regression for Ozone -- O3 (PPM)
-### Data exploration 
+### Data exploration
 ```{r}
 skim(data$Ozone_ppm)
 skim(data$Population_2022)
