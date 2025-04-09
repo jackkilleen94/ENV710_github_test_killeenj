@@ -178,8 +178,15 @@ ggplot(data, aes(x = Precip_in)) +
 
 ## Correlation Coefficients between Variables
 ```{r}
+# Select relevant columns
+correlation_data <- data %>%
+  select(2:4, Urbanization, 8:10)
 
+# Calculate correlation matrix
+correlation_matrix <- cor(correlation_data, use = "complete.obs")
+knitr::kable(correlation_matrix, digits = 2, na = "")
 ```
+
 
 
 # Regressions
@@ -207,8 +214,19 @@ summary(model_logpm25)
 
 ## Regression for NO2 (PPB)
 
+```{r regression of NO2 with independent vars}
+model_NO2 <- lm(NO2 ~ EV_ratio + Urbanization + Temp_F + Precip_in, data = data)
+summary(model_NO2)
 
+```
 
+```{r log transformed regression of NO2}
+data$log_Temp_F <- log(data$Temp_F)
+
+model_logNO2 <- lm(NO2 ~ log_EV_ratio + Urbanization + log_Temp_F + log_Precip_in, data = data)
+summary(model_logNO2)
+```
+> increased overall significance of the model, and EV_ratio variable. R-squared also increased.
 
 ## Regression for Ozone -- O3 (PPM)
 ### Data exploration 
