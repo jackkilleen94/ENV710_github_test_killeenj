@@ -34,7 +34,7 @@ summary(data)
 
 # Exploratory Data Visuals
 
-```{r State Map}
+```{r Map of EV per Capita }
 data_clean <- data %>%
   mutate(region = tolower(State))
 
@@ -54,13 +54,6 @@ ggplot(map_data_joined, aes(x = long, y = lat, group = group, fill = EV_ratio)) 
 
 
 ```{r Maps of Urbanization and EV Ratio by States}
-library(ggplot2)
-library(dplyr)
-library(maps)
-library(gridExtra)
-library(moments)    # For skewness & kurtosis
-library(nortest)    # For normality tests
-
 # Prepare data
 data_clean <- data %>% mutate(region = tolower(State))
 states_map <- map_data("state")
@@ -105,7 +98,7 @@ ggplot(data, aes(x = Urbanization, y = EV_ratio, label = State)) +
 ```{r PM2.5 Value Distribution}
 ggplot(data, aes(x = PM.2.5)) +
   geom_histogram(bins = 10, fill = "blue", color = "black") +
-  ggtitle("Distribution of PM.2.5 Concentration Value (PPB)") +
+  ggtitle("Distribution of PM.2.5 Concentration Value (µg/m³)") +
   xlab("Values") +
   ylab("Frequency")
 ```
@@ -115,7 +108,7 @@ ggplot(data, aes(x = PM.2.5)) +
 data$log_pm2.5 <- log(data$PM.2.5)
 ggplot(data, aes(x = log_pm2.5)) +
   geom_histogram(bins = 10, fill = "blue", color = "black") +
-  ggtitle("Distribution of Log Transformed PM.2.5 Concentration Value (PPB)") +
+  ggtitle("Distribution of Log Transformed PM.2.5 Concentration Value (µg/m³)") +
   xlab("Values") +
   ylab("Frequency")
 ```
@@ -143,7 +136,7 @@ ggplot(data, aes(x = Ozone_ppm)) +
   xlab("Values") +
   ylab("Frequency")
 ```
-> The concentration values (parts per billion) of NO2 and Ozone (parts per million) are closer to normal distribution. 
+> The concentration (parts per billion) of NO2 is closer to normal distribution. 
 > The two values in Ozone concentration histograms may appear to be outliers according to the histogram grouping, but we decided not to remove them because of small range of values.
 
 ## Independent Variables Histograms
@@ -162,7 +155,7 @@ ggplot(data, aes(x = EV_ratio)) +
 data$Temp_F <- as.numeric(data$Temp_F)
 ggplot(data, aes(x = Temp_F)) +
   geom_histogram(bins = 10, fill = "purple", color = "black") +
-  ggtitle("Distribution of 2022 Average Temperatures Across States") +
+  ggtitle("Distribution of 2022 Average Temperatures (F) Across States") +
   xlab("Values") +
   ylab("Frequency")
 ```
@@ -176,6 +169,18 @@ ggplot(data, aes(x = Precip_in)) +
   xlab("Values") +
   ylab("Frequency")
 ```
+
+```{r Precipitation}
+data$Urbanization <- as.numeric(data$Urbanization)
+ggplot(data, aes(x = Urbanization)) +
+  geom_histogram(bins = 10, fill = "green", color = "black") +
+  ggtitle("Distribution of 2022 Urbanization Ratio Across States") +
+  xlab("Values") +
+  ylab("Frequency")
+```
+
+
+
 
 ## Correlation Coefficients between Variables
 ```{r}
@@ -198,6 +203,8 @@ knitr::kable(correlation_matrix, digits = 2, na = "")
 model_pm25 <- lm(PM.2.5 ~ EV_ratio + Urbanization + Temp_F + Precip_in, data = data)
 summary(model_pm25)
 ```
+
+
 ```{r Log-tranform non-significant independent variables}
 data$log_Urbanization <- log(data$Urbanization)
 data$log_EV_ratio <- log(data$EV_ratio)
@@ -303,14 +310,20 @@ test_normality(data, "Temp_F") # normally distributed, no log needed
 test_normality(data, "Precip_in") # skewed, need log transform
 test_normality(data, "EV_ratio") # skewed, need log transformation
 
+# Original regression
+model_O3 <- lm(Ozone_ppm ~ EV_ratio + Urbanization + Temp_F + Precip_in, data = data)
+summary(model_O3)
+
+
+
 # Log transformation 
 log_ozone <- log(data$Ozone_ppm)
 log_precip <- log(data$Precip_in)
 log_EV_ratio <- log(data$EV_ratio)
 
 # Regression 
-ozone_model <- lm(log_ozone ~ log_precip + log_EV_ratio + Temp_F + Urbanization, data = data)
-summary(ozone_model)
+log_O3_model <- lm(log_ozone ~ log_precip + log_EV_ratio + Temp_F + Urbanization, data = data)
+summary(log_O3_model)
 
 #check residuals
 plot(ozone_model)
