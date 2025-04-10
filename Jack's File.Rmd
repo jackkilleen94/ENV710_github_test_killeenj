@@ -64,7 +64,8 @@ urban_map <- ggplot(map_data_joined, aes(x = long, y = lat, group = group, fill 
   geom_polygon(color = "white") +
   coord_fixed(1.3) +
   scale_fill_continuous(name = "Urban %", low = "#deebf7", high = "#08519c") +
-  labs(title = "Urbanization by State") +
+  labs(title = "Urbanization by State",
+       caption = " Data Source: Census.gov state population 2022") +
   theme_void()
 
 # EVs per capita map
@@ -72,7 +73,8 @@ ev_map <- ggplot(map_data_joined, aes(x = long, y = lat, group = group, fill = E
   geom_polygon(color = "white") +
   coord_fixed(1.3) +
   scale_fill_continuous(name = "EVs per Capita", low = "#fee5d9", high = "#a50f15") +
-  labs(title = "EVs per Capita by State") +
+  labs(title = "EVs per Capita by State",
+       caption = "Data sources: EV data from Alternative Fuels Data Center (AFDC) 2022 data") +
   theme_void()
 
 # Display side-by-side
@@ -83,12 +85,13 @@ gridExtra::grid.arrange(urban_map, ev_map, ncol = 2)
 library(ggrepel)
 
 ggplot(data, aes(x = Urbanization, y = EV_ratio, label = State)) +
-  geom_point(color = "#1f77b4", size = 3) +
+  geom_point(color = "#1f77b4", size = 2) +
   geom_text_repel(size = 3) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(title = "Urbanization vs EVs per Capita by State",
        x = "% Urban Population",
-       y = "EVs per Capita") +
+       y = "EVs per Capita",
+       caption = "Data sources: EV data from Alternative Fuels Data Center (AFDC) 2022 data, Census.gov State Population 2022") +
   theme_minimal()
 ```
 
@@ -110,7 +113,8 @@ ggplot(data, aes(x = log_pm2.5)) +
   geom_histogram(bins = 10, fill = "blue", color = "black") +
   ggtitle("Distribution of Log Transformed PM.2.5 Concentration Value (µg/m³)") +
   xlab("Values") +
-  ylab("Frequency")
+  ylab("Frequency")+
+  labs(caption = "Data source: EPA Air Data 2022")
 ```
 > Since the original data of PM2.5 displays some level of left-skewness, I attempted to log-transform the PM2.5 values, but the distribution stil displays a left-skewness. We can experiment this with regressions later too.
 
